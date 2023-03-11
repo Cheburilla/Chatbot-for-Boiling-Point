@@ -8,7 +8,7 @@ from config_reader import config
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO)
 # Объект бота
-bot = Bot(token=config.bot_token.get_secret_value())
+bot = Bot(token=config.bot_token.get_secret_value(), parse_mode="MarkdownV2")
 # Диспетчер
 dp = Dispatcher()
 
