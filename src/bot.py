@@ -1,8 +1,8 @@
 import asyncio
 import logging
 from aiogram import Bot, Dispatcher, types
-from aiogram.dispatcher.filters import Command
-from config_reader import config
+from aiogram.dispatcher.filters import Command, Text
+from utils.config_reader import config
 import requests
 
 
@@ -15,7 +15,7 @@ dp = Dispatcher()
 
 url = config.server_url
 
-@dp.message(Command("predict"))
+@dp.message(Text())
 async def predict(message: types.Message):
     r = requests.post(url, data={"bot_guid": config.bot_guid, "message": str(message)})
     answer = r.json()['answer']
