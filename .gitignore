@@ -136,3 +136,4 @@ dmypy.json
 
 #Supersecret BBPB files & configs
 credentials.json
+token.pickle
