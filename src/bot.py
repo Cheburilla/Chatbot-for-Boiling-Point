@@ -19,7 +19,7 @@ url = config.server_url
 
 @dp.message(Text())
 async def predict(message: types.Message):
-    r = requests.post(
-        url, data={"bot_guid": config.bot_guid, "message": str(message)})
+    payload = {"bot_guid": config.bot_guid, "message": str(message)}
+    r = requests.post(url, data=payload)
     answer = r.json()['answer']
     await message.answer(answer)
