@@ -1,55 +1,42 @@
-from typing import Any, Text, Dict, List
-
 import datetime
 import os.path
+import pickle
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-import pickle
 
+from utils.config_reader import config
 
-class ActionBooking(Action):
-    def name(self) -> Text:
-        return "action_booking"
-
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        dispatcher.utter_message(text="Спасибо за информацию\!")
-        print(tracker.slots)
-        add_event(
-            tracker.get_slot('event_name'),
-            tracker.get_slot('date'),
-            tracker.get_slot('time_start'),
-            tracker.get_slot('time_end'),
-            tracker.get_slot('hall'),
-            tracker.get_slot('user_name'),
-            tracker.get_slot('phone_number'),
-            tracker.get_slot('desire'),
-            'Рабочий')
-        add_event(
-            'Занято',
-            tracker.get_slot('date'),
-            tracker.get_slot('time_start'),
-            tracker.get_slot('time_end'),
-            tracker.get_slot('hall'),
-            '',
-            '',
-            '',
-            'Занятость')
-        SlotSet(tracker, None)
-        print(tracker.current_slot_values())
-        return []
+# add_event(
+#     tracker.get_slot('event_name'),
+#     tracker.get_slot('date'),
+#     tracker.get_slot('time_start'),
+#     tracker.get_slot('time_end'),
+#     tracker.get_slot('hall'),
+#     tracker.get_slot('user_name'),
+#     tracker.get_slot('phone_number'),
+#     tracker.get_slot('desire'),
+#     'Рабочий')
+# add_event(
+#     'Занято',
+#     tracker.get_slot('date'),
+#     tracker.get_slot('time_start'),
+#     tracker.get_slot('time_end'),
+#     tracker.get_slot('hall'),
+#     '',
+#     '',
+#     '',
+#     'Занятость')
 
 # If modifying these scopes, delete the file token.pickle.
 
 
-SCOPES = ['https://www.googleapis.com/auth/calendar']
+SCOPES = [config.scopes]
 
-CREDENTIALS_FILE = 'actions\credentials.json'
+CREDENTIALS_FILE = config.credentials_file
 
 
 def get_calendar_service():
@@ -57,8 +44,8 @@ def get_calendar_service():
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('actions/token.pickle'):
-        with open('actions/token.pickle', 'rb') as token:
+    if os.path.exists(config.pickle_path):
+        with open(config.pickle_path, 'rb') as token:
             creds = pickle.load(token)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
@@ -70,7 +57,7 @@ def get_calendar_service():
             creds = flow.run_local_server(port=0)
 
         # Save the credentials for the next run
-        with open('actions/token.pickle', 'wb') as token:
+        with open(config.pickle_path, 'wb') as token:
             pickle.dump(creds, token)
 
     service = build('calendar', 'v3', credentials=creds)

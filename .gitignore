@@ -133,3 +133,6 @@ dmypy.json
 
 #vscode files
 .vscode
+
+#Supersecret BBPB files & configs
+credentials.json
