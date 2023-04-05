@@ -2,29 +2,33 @@ import asyncio
 import logging
 
 import requests
-from aiogram import Bot, Dispatcher, types
-from aiogram.dispatcher.filters import Command, Text
+from aiogram import Bot, Dispatcher, types, executor
+from aiogram.types import Message, CallbackQuery
 
 from utils.config_reader import config
+from keyboard.for_questions import get_keyboard
+from manager_handlers import handlers
 
+    
+# Включаем логирование, чтобы не пропустить важные сообщения
+logging.basicConfig(level=logging.INFO)
+# Объект бота
+bot = Bot(token=config.bot_token.get_secret_value(), parse_mode="MarkdownV2")
+# Диспетчер
+dp = Dispatcher(bot=bot)
+# Регистрация хэндлеров
+# регистрация команды /start
+dp.register_message_handler(callback=handlers.cmd_start, commands=['start'])
+dp.register_callback_query_handler(callback=handlers.callback_handlers)
 
-async def main():
-    # Включаем логирование, чтобы не пропустить важные сообщения
-    logging.basicConfig(level=logging.INFO)
-    # Объект бота
-    bot = Bot(token=config.bot_token.get_secret_value(), parse_mode="MarkdownV2")
-    # Диспетчер
-    dp = Dispatcher()
+# регистрация команды /help
+dp.register_message_handler(callback=handlers.cmd_help, commands=['help'])
 
-    url = config.server_url
+# регистрация команды /user
+dp.register_message_handler(callback=handlers.cmd_user, commands=['user'])
 
-
-    @dp.message(Text())
-    async def predict(message: types.Message):
-        payload = {"bot_guid": config.bot_guid, "message": str(message)}
-        r = requests.post(url, data=payload)
-        answer = r.json()['answer']
-        await message.answer(answer)
-
+# регистрация команды /reminder
+dp.register_message_handler(callback=handlers.cmd_remind, commands=['remind'])
+    
 if __name__ == "__main__":
-    asyncio.run(main())
+    executor.start_polling(dp)

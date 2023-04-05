@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-def get_keyboard(callback_name, *args):
+def get_keyboard(callback_name : list[str], *args) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup()
 
     for i, name_button in enumerate(args):
