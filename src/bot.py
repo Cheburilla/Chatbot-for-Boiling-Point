@@ -20,15 +20,6 @@ dp = Dispatcher(bot=bot)
 # регистрация команды /start
 dp.register_message_handler(callback=handlers.cmd_start, commands=['start'])
 dp.register_callback_query_handler(callback=handlers.callback_handlers)
-
-# регистрация команды /help
-dp.register_message_handler(callback=handlers.cmd_help, commands=['help'])
-
-# регистрация команды /user
-dp.register_message_handler(callback=handlers.cmd_user, commands=['user'])
-
-# регистрация команды /reminder
-dp.register_message_handler(callback=handlers.cmd_remind, commands=['remind'])
     
 if __name__ == "__main__":
-    executor.start_polling(dp)
+    executor.start_polling(dp, skip_updates=True)
