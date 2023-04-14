@@ -7,7 +7,7 @@ from aiogram.types import Message, CallbackQuery
 
 from utils.config_reader import config
 from keyboard.for_questions import get_keyboard
-from manager_handlers import handlers
+from manager_handlers import handlers, predict_handler
 
     
 # Включаем логирование, чтобы не пропустить важные сообщения
@@ -19,6 +19,7 @@ dp = Dispatcher(bot=bot)
 # Регистрация хэндлеров
 # регистрация команды /start
 dp.register_message_handler(callback=handlers.cmd_start, commands=['start'])
+dp.register_message_handler(callback=predict_handler.predict)
 dp.register_callback_query_handler(callback=handlers.callback_handlers)
     
 if __name__ == "__main__":
