@@ -2,15 +2,16 @@ import asyncio
 import logging
 
 import requests
-from aiogram import Bot, Dispatcher, types, executor
-from aiogram.types import Message, CallbackQuery
+from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from utils.config_reader import config
+from aiogram.types import CallbackQuery, Message
+
 from keyboard.for_questions import get_keyboard
 from manager_handlers import handlers, predict_handler
 from manager_handlers.handlers import Form
 from utils.phone_check import is_phone_number
 
+from utils.config_reader import config
 
 storage = MemoryStorage()
     

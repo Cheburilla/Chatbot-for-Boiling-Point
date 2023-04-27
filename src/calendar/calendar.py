@@ -10,33 +10,12 @@ from googleapiclient.errors import HttpError
 
 from utils.config_reader import config
 
-# add_event(
-#     tracker.get_slot('event_name'),
-#     tracker.get_slot('date'),
-#     tracker.get_slot('time_start'),
-#     tracker.get_slot('time_end'),
-#     tracker.get_slot('hall'),
-#     tracker.get_slot('user_name'),
-#     tracker.get_slot('phone_number'),
-#     tracker.get_slot('desire'),
-#     'Рабочий')
-# add_event(
-#     'Занято',
-#     tracker.get_slot('date'),
-#     tracker.get_slot('time_start'),
-#     tracker.get_slot('time_end'),
-#     tracker.get_slot('hall'),
-#     '',
-#     '',
-#     '',
-#     'Занятость')
-
 # If modifying these scopes, delete the file token.pickle.
 
 
-SCOPES = [config.scopes]
+SCOPES = [config.scopes.get_secret_value()]
 
-CREDENTIALS_FILE = config.credentials_file
+CREDENTIALS_FILE = config.credentials_path.get_secret_value()
 
 
 def get_calendar_service():
@@ -44,8 +23,8 @@ def get_calendar_service():
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists(config.pickle_path):
-        with open(config.pickle_path, 'rb') as token:
+    if os.path.exists(config.pickle_path.get_secret_value()):
+        with open(config.pickle_path.get_secret_value(), 'rb') as token:
             creds = pickle.load(token)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
@@ -64,19 +43,17 @@ def get_calendar_service():
     return service
 
 
-def add_event(event_name: str, date: str, time_start: str, time_end: str, hall: str, user_name: str, phone_number: str, desire: str, calendar: str):
+def add_event(calendar: str, event_name: str, date: str, time_start: str, time_end: str, hall: str, user_name: str | None = None, phone_number: str | None = None, desire: str | None = None):
     service = get_calendar_service()
     time_start = datetime.datetime.strptime(
         date + " " + time_start, "%d.%m.%Y %H:%M").isoformat()
-    print(time_start)
     time_end = datetime.datetime.strptime(
         date + " " + time_end, "%d.%m.%Y %H:%M").isoformat()
-    print(time_end)
-    if calendar == 'Занятость':
-        if hall == 'Паттерн':
-            hall = 'Большой зал'
-        if hall == 'Знание':
-            hall = 'Малый зал'
+    if calendar == 'Рабочий':
+        if hall == 'Большой зал':
+            hall = 'Паттерн'
+        if hall == 'Малый зал':
+            hall = 'Знание'
     event_result = service.events().insert(calendarId=cal_choose(calendar),
                                            body={
                                                "summary": f'{hall}_ {event_name}',
@@ -100,3 +77,8 @@ def cal_choose(calendar: str):
         if not page_token:
             break
     return cal
+
+
+def macro_add_event(*args):  # event_name: str, date: str, time_start: str, time_end: str, hall: str, user_name: str | None = None, phone_number: str | None = None, desire: str | None = None
+    add_event("Рабочий", args)
+    add_event("Занятость", args)
