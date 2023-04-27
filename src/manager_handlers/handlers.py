@@ -3,8 +3,8 @@ from datetime import datetime
 import aiogram.utils.markdown as md
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import (CallbackQuery, Message,
-                           ReplyKeyboardMarkup, ReplyKeyboardRemove)
+from aiogram.types import (CallbackQuery, Message, ReplyKeyboardMarkup,
+                           ReplyKeyboardRemove)
 
 from keyboard.for_questions import get_keyboard
 from manager_handlers.reply_dict import reply_dict
