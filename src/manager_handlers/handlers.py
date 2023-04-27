@@ -8,6 +8,7 @@ from aiogram.types import (CallbackQuery, Message, ReplyKeyboardMarkup,
 from keyboard.for_questions import get_keyboard
 from manager_handlers.reply_dict import reply_dict
 from utils.config_reader import config
+from booking.booking import macro_add_event
 
 
 def is_date(date: str):
@@ -46,7 +47,7 @@ class Form(StatesGroup):
 
 async def cmd_book(message: Message):
     await Form.name.set()
-    await message.answer('На какое имя будет бронь\?')
+    await message.answer('На какое имя забронировать мероприятие\?')
 
 
 async def process_name(message: Message, state: FSMContext):
@@ -144,6 +145,7 @@ async def process_event_name(message: Message, state: FSMContext):
 
     # Finish conversation
     await state.finish()
+    macro_add_event(data['event_name'], data['date'], data['begin_time'], data['end_time'], data['hall'], data['name'], data['phone'], data['comments'])
     await message.answer("Знаете ли вы\, как правильно регистрировать и оформлять мероприятие на Leader\-ID\?", reply_markup=get_keyboard(['reg_yes', 'user'], 'Не знаю', 'Знаю'))
 
 

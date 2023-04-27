@@ -87,6 +87,3 @@ def cal_choose(calendar: str):
 def macro_add_event(*args):  # event_name: str, date: str, time_start: str, time_end: str, hall: str, user_name: str, phone_number: str, desire: str
     add_event("Рабочий", *args)
     add_event("Занятость", *args)
-
-macro_add_event("Test", "29.04.2023", "15:00", "17:00", "Большой зал", "Kentik", "+79514273757", "No")
-macro_add_event("Test", "29.04.2023", "18:00", "19:00", "Большой зал", "Kentik", "+79514273757", "No")
