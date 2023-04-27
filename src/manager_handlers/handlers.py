@@ -128,28 +128,15 @@ async def cmd_start(message: Message):
                          "отвечайте на мои вопросы, и я вам помогу\!😉\n\nЗарегистрированы ли Вы на Leader\-ID\?", reply_markup=get_keyboard(['yes', 'no'], "Да", "Нет"))
 
 
-async def cmd_reg(message: Message):
-    for ans in reply_dict['reg_yes']:
-        if len(ans) != 1:
-            if ans[0] != None:
-                await message.answer(ans[0])
-
-            if ans[1] != None:
-                await message.answer(ans[0], reply_markup=get_keyboard(*ans[1]))
-
-            if ans[2] != None:
-                await message.answer_photo(ans[2])
-
-
 async def callback_handlers(callback: CallbackQuery):
     async def repl(call_data):
         for ans in reply_dict[call_data]:
             if len(ans) != 1:
-                if ans[0] != None:
-                    await callback.message.answer(ans[0])
-
                 if ans[1] != None:
                     await callback.message.answer(ans[0], reply_markup=get_keyboard(*ans[1]))
+
+                elif ans[0] != None:
+                    await callback.message.answer(ans[0])
 
                 if ans[2] != None:
                     await callback.message.answer_photo(ans[2])

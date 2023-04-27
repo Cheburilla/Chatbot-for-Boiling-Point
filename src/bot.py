@@ -23,7 +23,6 @@ dp = Dispatcher(bot=bot, storage=storage)
 # регистрация команды /start
 dp.register_message_handler(callback=handlers.cmd_book, commands = ["book"])
 dp.register_message_handler(callback=handlers.cmd_start, commands=['start'])
-dp.register_message_handler(callback=handlers.cmd_reg, commands=['reg'])
 dp.register_message_handler(callback=handlers.process_name, state=Form.name)
 dp.register_message_handler(callback=handlers.process_hall, state=Form.hall)
 dp.register_message_handler(callback=handlers.process_date, state=Form.date)
@@ -34,7 +33,6 @@ dp.register_message_handler(callback=handlers.process_comments, state=Form.comme
 dp.register_message_handler(callback=handlers.process_event_name, state=Form.event_name)
 dp.register_message_handler(callback=predict_handler.predict)
 dp.register_callback_query_handler(callback=handlers.callback_handlers)
-#dp.message_handler(lambda message: message.text not in ["Male", "Female", "Other"], state=Form.gender)
     
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)
