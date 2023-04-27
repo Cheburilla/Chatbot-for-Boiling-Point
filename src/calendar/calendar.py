@@ -13,9 +13,9 @@ from utils.config_reader import config
 # If modifying these scopes, delete the file token.pickle.
 
 
-SCOPES = [config.scopes]
+SCOPES = [config.scopes.get_secret_value()]
 
-CREDENTIALS_FILE = config.credentials_path
+CREDENTIALS_FILE = config.credentials_path.get_secret_value()
 
 
 def get_calendar_service():
@@ -23,8 +23,8 @@ def get_calendar_service():
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists(config.pickle_path):
-        with open(config.pickle_path, 'rb') as token:
+    if os.path.exists(config.pickle_path.get_secret_value()):
+        with open(config.pickle_path.get_secret_value(), 'rb') as token:
             creds = pickle.load(token)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
