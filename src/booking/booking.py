@@ -8,7 +8,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from utils.config_reader import config
+from src.utils.config_reader import config
 
 # If modifying these scopes, delete the file token.pickle.
 
@@ -36,14 +36,14 @@ def get_calendar_service():
             creds = flow.run_local_server(port=0)
 
         # Save the credentials for the next run
-        with open(config.pickle_path, 'wb') as token:
+        with open(config.pickle_path.get_secret_value(), 'wb') as token:
             pickle.dump(creds, token)
 
     service = build('calendar', 'v3', credentials=creds)
     return service
 
 
-def add_event(calendar: str, event_name: str, date: str, time_start: str, time_end: str, hall: str, user_name: str | None = None, phone_number: str | None = None, desire: str | None = None):
+def add_event(calendar: str, event_name: str, date: str, time_start: str, time_end: str, hall: str, user_name: str, phone_number: str, desire: str):
     service = get_calendar_service()
     time_start = datetime.datetime.strptime(
         date + " " + time_start, "%d.%m.%Y %H:%M").isoformat()
@@ -54,6 +54,11 @@ def add_event(calendar: str, event_name: str, date: str, time_start: str, time_e
             hall = 'Паттерн'
         if hall == 'Малый зал':
             hall = 'Знание'
+    else:
+        event_name = "Занято"
+        user_name = ''
+        phone_number = ''
+        desire = ''
     event_result = service.events().insert(calendarId=cal_choose(calendar),
                                            body={
                                                "summary": f'{hall}_ {event_name}',
@@ -79,6 +84,9 @@ def cal_choose(calendar: str):
     return cal
 
 
-def macro_add_event(*args):  # event_name: str, date: str, time_start: str, time_end: str, hall: str, user_name: str | None = None, phone_number: str | None = None, desire: str | None = None
-    add_event("Рабочий", args)
-    add_event("Занятость", args)
+def macro_add_event(*args):  # event_name: str, date: str, time_start: str, time_end: str, hall: str, user_name: str, phone_number: str, desire: str
+    add_event("Рабочий", *args)
+    add_event("Занятость", *args)
+
+macro_add_event("Test", "29.04.2023", "15:00", "17:00", "Большой зал", "Kentik", "+79514273757", "No")
+macro_add_event("Test", "29.04.2023", "18:00", "19:00", "Большой зал", "Kentik", "+79514273757", "No")
