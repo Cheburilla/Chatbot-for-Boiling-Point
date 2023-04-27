@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     scopes: SecretStr
     credentials_path: SecretStr
     pickle_path: SecretStr
+    calendar_link: SecretStr
 
     # Вложенный класс с дополнительными указаниями для настроек
 

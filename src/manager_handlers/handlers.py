@@ -1,6 +1,5 @@
 from datetime import datetime
 
-import aiogram.utils.markdown as md
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import (CallbackQuery, Message,
@@ -8,6 +7,30 @@ from aiogram.types import (CallbackQuery, Message,
 
 from keyboard.for_questions import get_keyboard
 from manager_handlers.reply_dict import reply_dict
+from utils.config_reader import config
+
+
+def is_date(date: str):
+    try:
+        date = datetime.strptime(date, '%d.%m.%Y')
+    except:
+        return False
+    return True
+
+
+def is_time(time: str):
+    try:
+        date = datetime.strptime(time, '%H:%M')
+    except:
+        return False
+    return True
+
+def is_date_now(date: str):
+    date = datetime.strptime(date, '%d.%m.%Y')
+    if date < datetime.now():
+        return False
+    else:
+        return True
 
 
 class Form(StatesGroup):
@@ -25,16 +48,11 @@ async def cmd_book(message: Message):
     await Form.name.set()
     await message.answer('На какое имя будет бронь\?')
 
-# async def process_name(message: Message, state: FSMContext):
-#     async with state.proxy() as data:
-#         data['name'] = message.text
-
-#     await Form.next()
-
 
 async def process_name(message: Message, state: FSMContext):
     # Update state and data
     await Form.next()
+
     async with state.proxy() as data:
         data['name'] = message.text
 
@@ -43,6 +61,10 @@ async def process_name(message: Message, state: FSMContext):
     markup.add("Большой зал", "Малый зал")
 
     await message.answer("В каком зале будет проводиться мероприятие\?", reply_markup=markup)
+
+async def process_hall_invalid(message: Message):
+
+    return await message.answer("Пожалуйста, введите \"Малый зал\" или \"Большой зал\"")
 
 
 async def process_hall(message: Message, state: FSMContext):
@@ -53,46 +75,48 @@ async def process_hall(message: Message, state: FSMContext):
         markup = ReplyKeyboardRemove()
 
         await Form.next()
-        await message.answer("Введите дату мероприятия в формате ДД\.ММ\.ГГГГ", reply_markup=markup)
+        calendar = config.calendar_link.get_secret_value()
+        await message.answer(f"Введите дату мероприятия в формате ДД.ММ.ГГГГ\n\nВы можете посмотреть свободное время Точки в специальном календаре по ссылке: {calendar}", reply_markup=markup, parse_mode='HTML')
+
+async def process_date_invalid(message: Message):
+
+    return await message.answer("Пожалуйста\, введите действительную дату в формате ДД\.ММ\.ГГГГ")
 
 
 async def process_date(message: Message, state: FSMContext):
 
-    # try:
-    #     date = datetime.strptime(message.text, '%d.%m.%Y')
-    # except:
-    #     return await message.answer("Пожалуйста, введите действительную дату в формате ДД.ММ.ГГГГ.")
-
     await Form.next()
-    await state.update_data(date=datetime.strptime(message.text, '%d.%m.%Y'))
+    await state.update_data(date=message.text)
 
     await message.answer("Введите время начала мероприятия в формате ЧЧ\:ММ")
+
+async def process_beg_t_invalid(message: Message):
+
+    return await message.answer("Пожалуйста\, введите действительное время в формате ЧЧ\:ММ")
 
 
 async def process_beg_t(message: Message, state: FSMContext):
 
-    # try:
-    #     b_t = datetime.strptime(message.text, '%H:%M.')
-    # except:
-    #     return await message.answer("Пожалуйста, введите действительное время в формате ДД.ММ.ГГГГ.")
-
     await Form.next()
-    await state.update_data(begin_time=datetime.strptime(message.text, '%H:%M'))
+    await state.update_data(begin_time=message.text)
 
     await message.answer("Введите время конца мероприятия в формате ЧЧ\:ММ")
+
+async def process_end_t_invalid(message: Message):
+
+    return await message.answer("Пожалуйста\, введите действительное время в формате ЧЧ\:ММ")
 
 
 async def process_end_t(message: Message, state: FSMContext):
 
-    # try:
-    #     e_t = datetime.strptime(message.text, '%H:%M.')
-    # except:
-    #     return await message.answer("Пожалуйста, введите действительное время в формате ДД.ММ.ГГГГ.")
-
     await Form.next()
-    await state.update_data(end_time=datetime.strptime(message.text, '%H:%M'))
+    await state.update_data(end_time=message.text)
 
     await message.answer("Оставьте номер телефона\, с вами может связаться администратор📞")
+
+async def process_phone_invalid(message: Message):
+
+    return await message.answer("Пожалуйста\, введите Ваш действительный номер телефона\n\nНапример, в формате *89ХХХХХХХ* или в формате *\+7\(9ХХ\)ХХХ\-ХХ\-ХХ*")
 
 
 async def process_phone(message: Message, state: FSMContext):
@@ -115,11 +139,12 @@ async def process_event_name(message: Message, state: FSMContext):
     async with state.proxy() as data:
         data['event_name'] = message.text
 
-        await message.answer(f"Проверьте Ваши данные:\n\nВы забронировали мерпориятие на имя <b>{data['name']}</b>\nМесто проведения Вашего мероприятия - <b>{data['hall']}</b>\nВаше меропритятие будет проводиться <b>{data['date'].strftime('%d.%m.%Y')}</b> с <b>{data['begin_time'].strftime('%H:%M')}</b> до <b>{data['end_time'].strftime('%H:%M')}</b>\nВаш номер телефона - <b>{data['phone']}</b>\nВаши требования по оборудованию и оформлению зала: <b>{data['comments']}</b>\nНазвание Вашего мероприятия - <b>{data['event_name']}</b>",
+        await message.answer(f"Проверьте Ваши данные:\n\nВы забронировали мерпориятие на имя <b>{data['name']}</b>\nМесто проведения Вашего мероприятия - <b>{data['hall']}</b>\nВаше меропритятие будет проводиться <b>{data['date']}</b> с <b>{data['begin_time']}</b> до <b>{data['end_time']}</b>\nВаш номер телефона - <b>{data['phone']}</b>\nВаши требования по оборудованию и оформлению зала: <b>{data['comments']}</b>\nНазвание Вашего мероприятия - <b>{data['event_name']}</b>\n\nЕсли Вы указали что-то неверно, свяжитесь с администраторами Точки",
                              parse_mode='HTML')
 
     # Finish conversation
     await state.finish()
+    await message.answer("Знаете ли вы\, как правильно регистрировать и оформлять мероприятие на Leader\-ID\?", reply_markup=get_keyboard(['reg_yes', 'user'], 'Не знаю', 'Знаю'))
 
 
 async def cmd_start(message: Message):
