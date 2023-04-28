@@ -84,6 +84,7 @@ def cal_choose(calendar: str):
     return cal
 
 
-def macro_add_event(*args):  # event_name: str, date: str, time_start: str, time_end: str, hall: str, user_name: str, phone_number: str, desire: str
+# event_name: str, date: str, time_start: str, time_end: str, hall: str, user_name: str, phone_number: str, desire: str
+def macro_add_event(*args):
     add_event("Рабочий", *args)
     add_event("Занятость", *args)
