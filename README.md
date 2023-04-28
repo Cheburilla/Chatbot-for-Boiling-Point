@@ -16,6 +16,6 @@
 * BOT_GUID - GUID бота на центральном сервере
 * SERVER_URL - Адрес для запросов к центральному серверу
 * SCOPES - Адрес для аутентификации в календаре
-* CREDENTIALS_PATH - путь к Google Calendar OAuth 2.0 Client ID файлу в формате json в папке calendar, использующемуся для получения токена
-* PICKLE_PATH - путь к файлу токена календаря в формате pickle в папке calendar
+* CREDENTIALS_PATH - путь к Google Calendar OAuth 2.0 Client ID файлу в формате json в папке booking, использующемуся для получения токена
+* PICKLE_PATH - путь к файлу токена календаря в формате pickle в папке booking
 * CALENDAR_LINK - ссылка на публичный календарь мероприятий для ее вывода в сообщениях
