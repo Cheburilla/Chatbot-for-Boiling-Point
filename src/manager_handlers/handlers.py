@@ -52,6 +52,20 @@ async def cmd_book(message: Message):
     await message.answer(text)
 
 
+async def cancel_handler(message: Message, state: FSMContext):
+    """
+    Allow user to cancel any action
+    """
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+
+    # Cancel state and inform user about it
+    await state.finish()
+    # And remove keyboard (just in case)
+    await message.answer('Вы вышли из процесса бронирования', reply_markup=ReplyKeyboardRemove())
+
+
 async def process_name(message: Message, state: FSMContext):
     # Update state and data
     await Form.next()
@@ -106,7 +120,7 @@ async def process_beg_t(message: Message, state: FSMContext):
 
     await Form.next()
     await state.update_data(begin_time=message.text)
-    text = "Введите время конца мероприятия в формате ЧЧ\:ММ"
+    text = "Введите время конца мероприятия в формате ЧЧ:ММ"
     await message.answer(text)
 
 

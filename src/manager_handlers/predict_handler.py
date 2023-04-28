@@ -1,6 +1,5 @@
 import requests
-from aiogram import Bot, Dispatcher, types
-from aiogram.types import CallbackQuery, Message
+from aiogram import types
 
 from utils.config_reader import config
 

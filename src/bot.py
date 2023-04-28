@@ -1,12 +1,8 @@
-import asyncio
 import logging
 
-import requests
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram.types import CallbackQuery, Message
 
-from keyboard.for_questions import get_keyboard
 from manager_handlers import handlers, predict_handler
 from manager_handlers.handlers import Form
 from utils.config_reader import config
@@ -24,6 +20,8 @@ dp = Dispatcher(bot=bot, storage=storage)
 # регистрация команды /start
 dp.register_message_handler(callback=handlers.cmd_book, commands=["book"])
 dp.register_message_handler(callback=handlers.cmd_start, commands=['start'])
+dp.register_message_handler(
+    callback=handlers.cancel_handler, state='*', commands=['cancel'])
 dp.register_message_handler(callback=handlers.process_name, state=Form.name)
 dp.register_message_handler(handlers.process_hall_invalid, lambda message: message.text not in [
                             "Малый зал", "Большой зал"], state=Form.hall)
